@@ -1,0 +1,8 @@
+python=3.8
+torch=2.3.1
+torchaudio=2.3.1
+torchvision=0.18.1
+transformers=4.31.0
+datasets=2.10.0
+jieba=0.42.1
+nltk=3.8.1
