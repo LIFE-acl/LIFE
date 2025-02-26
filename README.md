@@ -1,46 +1,65 @@
 # The paper is under submission to the 2025 Association for Computational Linguistics.
 
-Pytorch code for paper: "Prompt-Induced Linguistic Fingerprints: Decoding Reconstruction
-Probability Shifts for LLM-Generated Fake News Early Detection"
+Pytorch code for paper: **"Prompt-Induced Linguistic Fingerprints: Decoding Reconstruction Probability Shifts for LLM-Generated Fake News Early Detection"**
 
-# Overview
+---
 
-This directory contains code necessary to run the LIFE. LIFE is a LLM-generated fake news detection architecture. See our paper for details on the code.
+# 📌 Overview
 
-![My Image](Figures//figure1.png)
+This directory contains code necessary to run **LIFE**, a LLM-generated fake news detection architecture. See our paper for details on the code.
 
-![My Image](Figures//figure2.png)
-# Dataset
+## 📌 Model Framework
+<div align="center">
+    <img src="Figures/figure1.png" alt="Model Framework" width="60%">
+</div>
 
-Our dataset includes Politifact_Llama, Gossipcop_Llama, and FakeLLM. We will provide these datasets under this directory.
+## 📌 Probability Shifts
+<div align="center">
+    <img src="Figures/figure2.png" alt="Probability Shifts" width="60%">
+</div>
 
-Besides, the generation methods for Politifact_Llama and Gossipcop_Llama are from the following project:
+---
 
-[Method in creating Politifact_Llama and Gossipcop_Llama](https://github.com/mbzuai-nlp/Fakenews-dataset)
+# 📚 Dataset
 
-The FakeLLM can be got from the following project:
+Our dataset includes **Politifact_Llama, Gossipcop_Llama, and FakeLLM**. We will provide these datasets under this directory.
 
-[FakeLLM Datasets](https://github.com/llm-misinformation/llm-misinformation/)
+Additionally, the generation methods for **Politifact_Llama and Gossipcop_Llama** are from the following project:
 
+🔗 [Method in creating Politifact_Llama and Gossipcop_Llama](https://github.com/mbzuai-nlp/Fakenews-dataset)
 
+The **FakeLLM** dataset can be obtained from the following project:
 
-# Requirements
+🔗 [FakeLLM Datasets](https://github.com/llm-misinformation/llm-misinformation/)
 
-It is recommended to create a conda virtual environment to run the code.
-The python version is python-3.8.0. The detailed version of some packages is available in requirements.txt. You can install all the required packages using the following command:
+---
 
-``` 
-$ pip install -r requirements.txt
+# ⚙️ Requirements
+
+It is recommended to create a **Conda virtual environment** to run the code.  
+The Python version is **3.8.0**. The detailed versions of required packages are available in `requirements.txt`.
+
+📌 Install all the required packages using:
+
+```bash
+pip install -r requirements.txt
 ```
 
-# Running the code
-1.run KeySentenseExtraction.py to obtain key sentences.
-2.run keySentenceProb.py to get the key sentence reconstruction probability vector. 
-3.Finally, run train.py.
+---
 
+# 🚀 Running the Code
 
-``` 
-$ python KeySentenseExtraction.py
-$ python keySentenceProb.py
-$ python train.py
-```
+1. **Extract key sentences**  
+   ```bash
+   python KeySentenseExtraction.py
+   ```
+2. **Obtain key sentence reconstruction probability vector**  
+   ```bash
+   python keySentenceProb.py
+   ```
+3. **Train the model**  
+   ```bash
+   python train.py
+   ```
+
+---
