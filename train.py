@@ -151,5 +151,5 @@ if __name__ =='__main__':
     result_acc = accuracy_score(test_labels, preds)
     print(metrics.classification_report(test_labels, preds, digits=4))
     print(
-        f"实验结果：f1分数：{result_f1}，recall分数：{result_recall}，Accuracy分数：{result_acc}，precision分数：{result_pre}")
+        f"result：f1分数：{result_f1}，recall分数：{result_recall}，Accuracy分数：{result_acc}，precision分数：{result_pre}")
 
