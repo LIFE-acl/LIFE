@@ -102,7 +102,7 @@ def compute_key_sentence_losses(model, tokenizer, text, key_sentence, max_tokens
     return losses
 
 def regenerate_important_sentence(news_id, important_sentences_list):
-    # 查找对应的关键句
+    # Find the corresponding key sentence
     key_sentence = None
     for key, value in important_sentences_list.items():
         if value['id'] == news_id:
@@ -113,39 +113,36 @@ def regenerate_important_sentence(news_id, important_sentences_list):
 
 
 if __name__ == '__main__':
-    # 读取关键句序号文档
+    # Read key sentence numbering document
     with open('key_sentence_extraction//Gossipcop//train_gossip_important_sentences.json') as f:
         train_important_sentences_list = json.load(f)
 
     with open('key_sentence_extraction//Gossipcop//test_gossip_important_sentences.json') as f:
         test_important_sentences_list = json.load(f)
 
-    # 设置CUDA设备
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     set_seed(2024)
 
-    # 指定模型路径
     model_path = "/home/wangchi/LLaMA"
-    # 加载分词器和模型
+    # Load tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True).half().cuda()
     model.eval()
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
-    # 读取原本数据，对应id检索关键句json文件
-    with open('/home/wangchi/MIN-FNS/Experiment/Dataset_unpack/GossipCop++/train_gossip.json') as f:
+    # Read the original data and retrieve the key sentence JSON file corresponding to the ID
+    with open('train_gossip.json') as f:
         train_data = json.load(f)
 
-    with open('/home/wangchi/MIN-FNS/Experiment/Dataset_unpack/GossipCop++/test_gossip.json') as f:
+    with open('test_gossip.json') as f:
         test_data = json.load(f)
 
     max_words = 20
     train_all_word_probs = []
     train_all_labels = []
     train_all_news_id = []
-    # pdb.set_trace()
-    # 处理train_data数据集
+    # Processing the train_data dataset
     for data in tqdm(train_data.values(), desc="Processing train_data"):
         news_id = data['id']
         news_article = data['article']
@@ -175,7 +172,7 @@ if __name__ == '__main__':
     test_all_word_probs = []
     test_all_labels = []
     test_all_news_id = []
-    # 处理 test_data 数据集
+    # Processing the test_data dataset
     for data in tqdm(test_data.values(), desc="Processing test_data"):
         news_id = data['id']
         news_article = data['article']
@@ -194,7 +191,7 @@ if __name__ == '__main__':
     all_news_id = torch.tensor(test_all_news_id)
     all_word_probs_tensor = torch.tensor(test_all_word_probs)
     all_labels_tensor = torch.tensor(test_all_labels)
-    # 保存概率分布和标签到一个.pt 文件中
+    # Save probability distribution and labels
     torch.save({'id': all_news_id, 'probs': all_word_probs_tensor, 'labels': all_labels_tensor},
                "Gossipcop//test_gossip_data_probs_llama.pt")
     print("Gossipcop//test_gossip_data_probs_llama.pt")

@@ -101,7 +101,7 @@ def seed_torch(seed=42):
 
 
 if __name__ =='__main__':
-    # 加载数据
+    # Load datas
     seed_torch(42)
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
@@ -114,50 +114,37 @@ if __name__ =='__main__':
     test_word_probs = test_data['probs'].float()
     test_labels = test_data['labels'].long()
 
-    # 数据集划分
     X_train, y_train = (train_word_probs, train_labels)
     X_test, y_test = (test_word_probs, test_labels)
 
-    # pdb.set_trace()
-
-    # 转换为 DataLoader
     train_dataset = torch.utils.data.TensorDataset(X_train, y_train)
     test_dataset = torch.utils.data.TensorDataset(X_test, y_test)
 
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=True)
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-    # 设置设备
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # 定义模型、损失函数和优化器
     input_dim = 20
     hidden_dim = 128
     output_dim = 2
 
     model = MLP(input_dim, hidden_dim, output_dim).to(device)
-    # model = TextCNN().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=0.001)
 
-    # 初始化用于保存最佳模型的变量
     print("*"*80)
     print("Training...")
-    # 训练模型
+    # training model
     for epoch in range(100):
         avg_loss = train_model(model, train_loader, criterion, optimizer, device)
         print(f"Epoch {epoch + 1}/{100} avg loss:", avg_loss)
 
-    # # 加载最佳模型
-    # model.load_state_dict(torch.load(best_model_path))
-
-    # 测试模型
+    # testing model
     print("*"*80)
     print("Testing...")
     preds, test_labels = evaluate_model(model, test_loader, device)
-    # torch.save({'pred': preds, 'labels': test_labels}, "test_datasets.pt")
-    # pdb.set_trace()
-    # 计算评估指标
+
     result_pre = precision_score(test_labels, preds,zero_division=0,average="weighted")
     result_f1 = f1_score(test_labels, preds,average="weighted")
     result_recall = recall_score(test_labels, preds,average="weighted")

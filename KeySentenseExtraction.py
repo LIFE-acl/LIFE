@@ -41,12 +41,12 @@ def train_model(train_dataset):
     model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
 
     training_args = TrainingArguments(
-        output_dir='./results',  # 输出路径
-        per_device_train_batch_size=8,  # 训练时的batch size
-        num_train_epochs=10,  # 训练轮数
-        weight_decay=0.01,  # 权重衰减
-        logging_dir='./logs',  # 日志路径
-        report_to="none"  # 禁用wandb
+        output_dir='./results',
+        per_device_train_batch_size=8,
+        num_train_epochs=10,
+        weight_decay=0.01,
+        logging_dir='./logs',
+        report_to="none"
     )
     trainer = Trainer(
         model=model,
@@ -103,43 +103,41 @@ def get_sentence_importance(news_text, model, tokenizer, device):
 
 def main():
     # load the train datas and test datas
-    train_file = '/home/wangchi/MIN-FNS/Experiment/Dataset_unpack/GossipCop++/train_gossip.json'
-    test_file = '/home/wangchi/MIN-FNS/Experiment/Dataset_unpack/GossipCop++/test_gossip.json'
+    train_file = 'train_gossip.json'
+    test_file = 'test_gossip.json'
 
     train_output_file = 'Gossipcop//train_gossip_important_sentences.json'
     test_output_file = 'Gossipcop//test_gossip_important_sentences.json'
 
     train_texts, train_labels, test_texts, train_datas, test_datas = load_news_data(train_file,test_file)
 
-    # 加载Pre-trained model分词器
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-    # 创建训练和验证数据集
     train_dataset = tokenize_data(train_texts, train_labels, tokenizer)
 
-    # 训练模型
+
     if os.path.exists("Gossip_model.pt"):
         model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)
         model.load_state_dict(torch.load("Gossip_model.pt"))
-        model.eval()  # 切换到评估模式
+        model.eval()
     else:
         model = train_model(train_dataset)
         torch.save(model.state_dict(), "Gossip_model.pt")
 
-    # 设置设备
+
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
     model.to(device)
 
-    # 处理所有新闻，提取最重要的句子
+
     train_important_sentences = {}
-    train_idx = 0  # 全局索引计数器
+    train_idx = 0
     test_important_sentences = {}
-    test_idx = 0  # 全局索引计数器
-    # 处理 train 文件中的新闻
+    test_idx = 0
+
     for id, (key, value) in enumerate(train_datas.items()):
 
-        news_text = value['article']  # 直接从字典中获取
-        news_id = value['id']  # 获取 id
+        news_text = value['article']
+        news_id = value['id']
         key_sentence, key_index = get_sentence_importance(news_text, model, tokenizer, device)
 
         train_important_sentences[train_idx] = {
@@ -149,16 +147,16 @@ def main():
         }
         train_idx += 1
 
-    # 保存结果到JSON文件
+
     with open(train_output_file, 'w', encoding='utf-8') as f:
         json.dump(train_important_sentences, f, ensure_ascii=False, indent=4)
 
-    print(f"训练集关键句子提取完成，结果已保存至 {train_output_file}")
+    print(f"Train_datasets Completion! Result saved in  {train_output_file}")
 
-    # 处理 test 文件中的新闻
+
     for id, (key, value) in enumerate(test_datas.items()):
-        news_text = value['article']  # 直接从字典中获取
-        news_id = value['id']  # 获取 id
+        news_text = value['article']
+        news_id = value['id']
         key_sentence, key_index = get_sentence_importance(news_text, model, tokenizer, device)
 
         test_important_sentences[test_idx] = {
@@ -168,14 +166,13 @@ def main():
         }
         test_idx += 1
 
-    # 保存结果到JSON文件
     with open(test_output_file, 'w', encoding='utf-8') as f:
         json.dump(test_important_sentences, f, ensure_ascii=False, indent=4)
 
-    print(f"测试集关键句子提取完成，结果已保存至 {test_output_file}")
+    print(f"Test_datasets Completion! Result saved in {test_output_file}")
 
 
 if __name__ == "__main__":
-    # 设置CUDA设备
+
     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     main()
